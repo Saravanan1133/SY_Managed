@@ -1,0 +1,124 @@
+managed implementation in class zbp_sy_i_travel_m unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZSY_I_TRAVEL_M //alias <alias_name>
+implementation in class zsycl_bp_travel_m unique
+with additional save
+draft table zsy_d_travel_m
+persistent table zsy_travel_m
+lock master total etag Lastchangedat
+authorization master ( instance )
+etag master Lastchangedat
+early numbering
+{
+  create ( authorization : global );
+  update;
+  delete;
+  field ( readonly ) TravelId, Createdat, Createdby, Lastchangedat, Lastchangedby;
+  field ( mandatory ) AgencyId, CustomerId, BeginDate, EndDate, BookingFee, CurrencyCode, Status;
+  association _Booking { with draft; create ( features : instance ); }
+
+  action ( features : instance ) acceptTravel result [1] $self;
+  action ( features : instance ) rejectTravel result [1] $self;
+
+  factory action copyTravel [1];
+  internal action recalcTotalPrice;
+
+  determination determineTotalPrice on modify { create; field BookingFee, CurrencyCode; }
+
+  validation validateCustomer on save { create; field CustomerId; }
+
+    draft action Edit;
+    draft action Activate optimized;
+    draft action Discard;
+    draft action Resume;
+    draft determine action Prepare { validation validateCustomer; }
+
+  mapping for zsy_travel_m
+    {
+      TravelId      = travel_id;
+      AgencyId      = agency_id;
+      CustomerId    = customer_id;
+      BeginDate     = begin_date;
+      EndDate       = end_date;
+      BookingFee    = booking_fee;
+      TotalPrice    = total_price;
+      CurrencyCode  = currency_code;
+      Description   = description;
+      Status        = status;
+      CreatedBy     = createdby;
+      CreatedAt     = createdat;
+      LastChangedBy = lastchangedby;
+      LastChangedAt = lastchangedat;
+    }
+
+}
+
+define behavior for ZSY_I_BOOKING_M //alias <alias_name>
+implementation in class zsycl_bp_booking_m unique
+draft table zsy_d_booking_m
+persistent table zsy_booking_m
+lock dependent by _Travel
+authorization dependent by _Travel
+etag master LastChangedAt
+early numbering
+{
+  update;
+  delete;
+  field ( readonly ) TravelId, BookingId, LastChangedAt;
+  field ( mandatory ) CarrierId, ConnectionId, FlightDate, BookingStatus;
+  field ( mandatory : create, readonly : update ) BookingDate, CustomerId;
+  association _Travel { with draft; }
+  association _BookingSuppl { with draft; create ( features : instance ); }
+
+   determination determineTotalPrice on modify { create; field FlightPrice, CurrencyCode; }
+
+  mapping for zsy_booking_m
+    {
+      TravelId      = travel_id;
+      BookingId     = booking_id;
+      BookingDate   = booking_date;
+      CustomerId    = customer_id;
+      CarrierId     = carrier_id;
+      ConnectionId  = connection_id;
+      FlightDate    = flight_date;
+      FlightPrice   = flight_price;
+      CurrencyCode  = currency_code;
+      BookingStatus = booking_status;
+      LastChangedAt = last_changed_at;
+    }
+
+}
+
+define behavior for ZSY_I_BOOKSUPPL_M //alias <alias_name>
+implementation in class zsycl_bp_booksuppl_m unique
+draft table zsy_d_booksup_m
+with unmanaged save with full data
+//persistent table zsy_booksuppl_m
+lock dependent by _Travel
+authorization dependent by _Travel
+etag master LastChangedAt
+early numbering
+{
+  update;
+  delete;
+  field ( readonly ) TravelId, BookingId, BookingSupplementId, LastChangedAt;
+  field ( mandatory ) SupplementId, Price;
+  association _Travel { with draft; }
+  association _Booking { with draft; }
+
+   determination determineTotalPrice on modify { create; field Price, CurrencyCode; }
+
+  mapping for zsy_booksuppl_m
+    {
+      TravelId            = travel_id;
+      BookingId           = booking_id;
+      BookingSupplementId = booking_supplement_id;
+      SupplementId        = supplement_id;
+      Price               = price;
+      CurrencyCode        = currency_code;
+      LastChangedAt       = last_changed_at;
+    }
+
+}

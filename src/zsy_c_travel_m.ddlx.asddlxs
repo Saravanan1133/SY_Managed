@@ -1,0 +1,82 @@
+@Metadata.layer: #CORE
+@Search.searchable: true
+@UI.headerInfo: {
+    typeName: 'Travel',
+    typeNamePlural: 'Travels',
+    title: {
+        type: #STANDARD,
+        label: 'TravelId',
+        value: 'TravelId'
+    },
+    description: {
+        type: #STANDARD,
+        value: 'Description'
+    }
+}
+annotate entity ZSY_C_TRAVEL_M with
+{
+  @UI.facet: [{
+      id: 'Travel',
+      purpose: #STANDARD,
+      position: 10,
+      label: 'Travel Details',
+      type: #IDENTIFICATION_REFERENCE
+  },
+  {
+    id: 'Booking',
+    purpose : #STANDARD,
+    position: 20,
+    label: 'Booking Details',
+    type: #LINEITEM_REFERENCE,
+    targetElement: '_Booking'
+  }]
+
+  @UI.selectionField: [{ position: 10 }]
+  @UI.lineItem: [{ position: 10, type: #FOR_ACTION, dataAction: 'copyTravel', label: 'Copy Travel' }]
+  @UI.identification: [{ position: 10 }]
+  @Search.defaultSearchElement: true
+  TravelId;
+  @UI.lineItem: [{ position: 20 }]
+  @UI.selectionField: [{ position: 20 }]
+  @Consumption.valueHelpDefinition: [{ entity: {
+                                           name: '/DMO/I_Agency',
+                                           element: 'AgencyID'
+                                       } }]
+  @UI.identification: [{ position: 20 }]
+  AgencyId;
+  @UI.lineItem: [{ position: 30 }]
+  @UI.selectionField: [{ position: 30 }]
+  @Consumption.valueHelpDefinition: [{ entity: {
+                                           name: '/DMO/I_Customer',
+                                           element: 'CustomerID'
+                                       } }]
+  @UI.identification: [{ position: 30 }]
+  CustomerId;
+  @UI.lineItem: [{ position: 40 }]
+  @UI.identification: [{ position: 40 }]
+  BeginDate;
+  @UI.lineItem: [{ position: 50 }]
+  @UI.identification: [{ position: 50 }]
+  EndDate;
+  @UI.identification: [{ position: 60 }]
+  BookingFee;
+  @UI.lineItem: [{ position: 60 }]
+  @UI.identification: [{ position: 70 }]
+  TotalPrice;
+  @Consumption.valueHelpDefinition: [{ entity: {
+                                           name: 'I_Currency',
+                                           element: 'Currency'
+                                       } }]
+  CurrencyCode;
+  @UI.identification: [{ position: 80 }]
+  Description;
+  @UI.lineItem: [{ position: 70 }]
+  @UI.selectionField: [{ position: 40 }]
+  @Consumption.valueHelpDefinition: [{ entity: {
+                                           name: '/DMO/I_Overall_Status_VH',
+                                           element: 'OverallStatus'
+                                       } }]
+  @UI.identification: [{ position: 90 }]
+  Status;
+  //
+}

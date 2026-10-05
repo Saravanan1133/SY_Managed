@@ -1,0 +1,5 @@
+CLASS zsycl_bp_booksuppl_m DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zsy_i_travel_m.
+ENDCLASS.
+
+CLASS zsycl_bp_booksuppl_m IMPLEMENTATION.
+ENDCLASS.
